@@ -30,7 +30,7 @@ export function Sidebar() {
           Sales video
         </NavLink>
         <NavLink to="/chat-ui" className={navClass}>
-          Chat UI
+          Mobile settings
         </NavLink>
       </nav>
 

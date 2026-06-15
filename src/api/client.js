@@ -48,16 +48,8 @@ export async function fetchOverview() {
   return json.data;
 }
 
-export async function updateChatUiConfig({
-  showCall,
-  showVoice,
-  showMic,
-  showDeleteUser,
-}) {
+export async function updateChatUiConfig({ showDeleteUser }) {
   const res = await api.put('/api/web-admin/chat-ui-config', {
-    showCall,
-    showVoice,
-    showMic,
     showDeleteUser,
   });
   const json = res.data;
