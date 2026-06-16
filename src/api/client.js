@@ -59,6 +59,15 @@ export async function updateChatUiConfig({ showDeleteUser }) {
   return json.data;
 }
 
+export async function updateIntakeOnboardingConfig({ enabled }) {
+  const res = await api.put('/api/web-admin/intake-onboarding-config', { enabled });
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to update intake onboarding');
+  }
+  return json.data;
+}
+
 export async function updateIntroVideoConfig({
   enabled,
   showEveryLaunch,
@@ -110,6 +119,169 @@ export async function uploadSalesVideoFile(file) {
   const json = res.data;
   if (!json?.success) {
     throw new Error(json?.message || 'Upload failed');
+  }
+  return json.data;
+}
+
+export async function fetchLessons({ page = 1, pageSize = 20, level, topic, isActive } = {}) {
+  const params = { page, pageSize };
+  if (level) params.level = level;
+  if (topic) params.topic = topic;
+  if (isActive !== undefined && isActive !== null && isActive !== '') {
+    params.is_active = isActive;
+  }
+  const res = await api.get('/api/web-admin/lessons', { params });
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to load lessons');
+  }
+  return json.data;
+}
+
+export async function fetchLesson(lessonId) {
+  const res = await api.get(`/api/web-admin/lessons/${lessonId}`);
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to load lesson');
+  }
+  return json.data.lesson;
+}
+
+export async function createLesson(payload) {
+  const res = await api.post('/api/web-admin/lessons', payload);
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to create lesson');
+  }
+  return json.data.lesson;
+}
+
+export async function updateLesson(lessonId, payload) {
+  const res = await api.put(`/api/web-admin/lessons/${lessonId}`, payload);
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to update lesson');
+  }
+  return json.data.lesson;
+}
+
+export async function deleteLesson(lessonId) {
+  const res = await api.delete(`/api/web-admin/lessons/${lessonId}`);
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to delete lesson');
+  }
+  return true;
+}
+
+export async function uploadLessonVideo(lessonId, file) {
+  const form = new FormData();
+  form.append('file', file);
+  const res = await api.post(`/api/web-admin/lessons/${lessonId}/upload-video`, form, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Upload failed');
+  }
+  return json.data;
+}
+
+export async function fetchIntakeQuestions() {
+  const res = await api.get('/api/web-admin/intake-questions');
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to load intake questions');
+  }
+  return json.data;
+}
+
+export async function fetchIntakeQuestion(questionId) {
+  const res = await api.get(`/api/web-admin/intake-questions/${questionId}`);
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to load intake question');
+  }
+  return json.data.question;
+}
+
+export async function createIntakeQuestion(payload) {
+  const res = await api.post('/api/web-admin/intake-questions', payload);
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to create intake question');
+  }
+  return json.data.question;
+}
+
+export async function updateIntakeQuestion(questionId, payload) {
+  const res = await api.put(`/api/web-admin/intake-questions/${questionId}`, payload);
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to update intake question');
+  }
+  return json.data.question;
+}
+
+export async function deleteIntakeQuestion(questionId) {
+  const res = await api.delete(`/api/web-admin/intake-questions/${questionId}`);
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to delete intake question');
+  }
+  return true;
+}
+
+export async function reorderIntakeQuestions(orderedIds) {
+  const res = await api.put('/api/web-admin/intake-questions/reorder', { orderedIds });
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to reorder intake questions');
+  }
+  return json.data;
+}
+
+export async function fetchPlacementQuestions() {
+  const res = await api.get('/api/web-admin/placement-questions');
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to load placement questions');
+  }
+  return json.data;
+}
+
+export async function createPlacementQuestion(payload) {
+  const res = await api.post('/api/web-admin/placement-questions', payload);
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to create placement question');
+  }
+  return json.data.question;
+}
+
+export async function updatePlacementQuestion(questionId, payload) {
+  const res = await api.put(`/api/web-admin/placement-questions/${questionId}`, payload);
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to update placement question');
+  }
+  return json.data.question;
+}
+
+export async function deletePlacementQuestion(questionId) {
+  const res = await api.delete(`/api/web-admin/placement-questions/${questionId}`);
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to delete placement question');
+  }
+  return true;
+}
+
+export async function reorderPlacementQuestions(orderedIds) {
+  const res = await api.put('/api/web-admin/placement-questions/reorder', { orderedIds });
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to reorder placement questions');
   }
   return json.data;
 }

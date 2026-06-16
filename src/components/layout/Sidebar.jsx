@@ -32,6 +32,15 @@ export function Sidebar() {
         <NavLink to="/chat-ui" className={navClass}>
           Mobile settings
         </NavLink>
+        <NavLink to="/lessons" className={navClass}>
+          Lesson library
+        </NavLink>
+        <NavLink to="/onboarding-intake" className={navClass}>
+          Onboarding intake
+        </NavLink>
+        <NavLink to="/onboarding-placement" className={navClass}>
+          Placement test
+        </NavLink>
       </nav>
 
       <button

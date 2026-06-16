@@ -5,7 +5,10 @@ import { useAuth } from '../context/AuthContext';
 import { ChatUiSettings } from '../pages/ChatUiSettings';
 import { Dashboard } from '../pages/Dashboard';
 import { IntroVideoSettings } from '../pages/IntroVideoSettings';
+import { LessonLibrary } from '../pages/LessonLibrary';
 import { Login } from '../pages/Login';
+import { OnboardingIntake } from '../pages/OnboardingIntake';
+import { OnboardingPlacement } from '../pages/OnboardingPlacement';
 import { SalesVideoSettings } from '../pages/SalesVideoSettings';
 
 function ProtectedLayout() {
@@ -25,6 +28,9 @@ export function AppRoutes() {
         <Route path="/intro-video" element={<IntroVideoSettings />} />
         <Route path="/sales-video" element={<SalesVideoSettings />} />
         <Route path="/chat-ui" element={<ChatUiSettings />} />
+        <Route path="/lessons" element={<LessonLibrary />} />
+        <Route path="/onboarding-intake" element={<OnboardingIntake />} />
+        <Route path="/onboarding-placement" element={<OnboardingPlacement />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
