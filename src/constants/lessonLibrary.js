@@ -1,4 +1,4 @@
-/** Lesson catalog enums — keep in sync with python-backend app/core/lesson_constants.py */
+/** Lesson catalog enums — keep in sync with node-backend/src/core/lessonConstants.ts */
 
 export const LESSON_LEVELS = ['A0', 'A1', 'A2', 'B1', 'B2', 'C1'];
 

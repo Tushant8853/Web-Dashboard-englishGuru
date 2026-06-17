@@ -21,7 +21,7 @@ Default dev URL: `http://localhost:5173`
 | Variable | Description |
 | -------- | ----------- |
 | `VITE_PORT` | Dev server port (default `5173`) |
-| `VITE_API_BASE_URL` | Python backend origin, e.g. `http://localhost:4001` |
+| `VITE_API_BASE_URL` | Node backend origin, e.g. `http://localhost:4001` |
 | `VITE_ASSET_BASE_URL` | CloudFront base URL for video preview |
 
 Backend must have `ADMIN_USERNAME`, `ADMIN_PASSWORD`, and `ADMIN_JWT_SECRET` configured for login.
