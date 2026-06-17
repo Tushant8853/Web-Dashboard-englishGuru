@@ -1,6 +1,6 @@
 # English Guru — Web Dashboard
 
-React admin dashboard for the English Guru app. Manages intro/sales videos, chat UI flags, and user overview stats via the FastAPI backend.
+React admin dashboard for the English Guru app. Manages intro/sales videos, chat UI flags, and user overview stats via the node-backend Express API.
 
 ## Stack
 
