@@ -7,10 +7,13 @@ import {
   updateLesson,
   uploadLessonVideo,
 } from '../api/client';
+import {
+  LESSON_LEVELS,
+  LESSON_TOPICS,
+  LEVEL_LABELS,
+  PAGE_SIZE_OPTIONS,
+} from '../constants/lessonLibrary';
 import { playbackUrlFromFileName } from '../utils/introVideoPlayback';
-
-const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1'];
-const TOPICS = ['grammar', 'vocabulary', 'listening', 'reading', 'conversation'];
 
 const emptyQuiz = () => ({
   question: '',
@@ -23,8 +26,8 @@ const emptyForm = () => ({
   dayNumber: 1,
   title: '',
   description: '',
-  level: 'A1',
-  topic: 'grammar',
+  level: 'A0',
+  topic: 'conversation',
   videoFileName: '',
   externalVideoUrl: '',
   isActive: true,
@@ -38,12 +41,26 @@ function videoPreviewUrl(lesson) {
   return playbackUrlFromFileName(lesson?.videoFileName ?? '');
 }
 
+function videoStatusLabel(lesson) {
+  if (lesson?.videoFileName?.trim()) return 'S3';
+  if (lesson?.externalVideoUrl?.trim()) return 'URL';
+  return 'None';
+}
+
+function videoStatusClass(lesson) {
+  if (lesson?.videoFileName?.trim() || lesson?.externalVideoUrl?.trim()) {
+    return 'text-emerald-400';
+  }
+  return 'text-amber-400';
+}
+
 export function LessonLibrary() {
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(20);
   const [levelFilter, setLevelFilter] = useState('');
+  const [topicFilter, setTopicFilter] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -62,6 +79,7 @@ export function LessonLibrary() {
         page,
         pageSize,
         level: levelFilter || undefined,
+        topic: topicFilter || undefined,
       });
       setItems(data.items ?? []);
       setTotal(data.total ?? 0);
@@ -70,7 +88,7 @@ export function LessonLibrary() {
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, levelFilter]);
+  }, [page, pageSize, levelFilter, topicFilter]);
 
   useEffect(() => {
     void loadLessons();
@@ -91,8 +109,8 @@ export function LessonLibrary() {
       dayNumber: lesson.dayNumber ?? 1,
       title: lesson.title ?? '',
       description: lesson.description ?? '',
-      level: lesson.level ?? 'A1',
-      topic: lesson.topic ?? 'grammar',
+      level: lesson.level ?? 'A0',
+      topic: lesson.topic ?? 'conversation',
       videoFileName: lesson.videoFileName ?? '',
       externalVideoUrl: lesson.externalVideoUrl ?? '',
       isActive: Boolean(lesson.isActive),
@@ -205,7 +223,7 @@ export function LessonLibrary() {
         <div>
           <h2 className="text-2xl font-bold text-white">Lesson library</h2>
           <p className="mt-1 text-sm text-slate-400">
-            {total} lessons in catalog. Add, edit, delete, and upload videos.
+            {total} lessons in catalog (A0–C1). Edit content, quizzes, and upload videos per lesson.
           </p>
         </div>
         <button
@@ -220,7 +238,7 @@ export function LessonLibrary() {
       {error ? <p className="mb-3 text-sm text-red-400">{error}</p> : null}
       {message ? <p className="mb-3 text-sm text-emerald-400">{message}</p> : null}
 
-      <div className="mb-4 flex flex-wrap gap-3">
+      <div className="mb-4 flex flex-wrap items-center gap-3">
         <select
           value={levelFilter}
           onChange={e => {
@@ -230,9 +248,38 @@ export function LessonLibrary() {
           className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white"
         >
           <option value="">All levels</option>
-          {LEVELS.map(l => (
+          {LESSON_LEVELS.map(l => (
             <option key={l} value={l}>
-              {l}
+              {l} — {LEVEL_LABELS[l]}
+            </option>
+          ))}
+        </select>
+        <select
+          value={topicFilter}
+          onChange={e => {
+            setTopicFilter(e.target.value);
+            setPage(1);
+          }}
+          className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white"
+        >
+          <option value="">All topics</option>
+          {LESSON_TOPICS.map(t => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
+        <select
+          value={pageSize}
+          onChange={e => {
+            setPageSize(Number(e.target.value));
+            setPage(1);
+          }}
+          className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white"
+        >
+          {PAGE_SIZE_OPTIONS.map(size => (
+            <option key={size} value={size}>
+              {size} per page
             </option>
           ))}
         </select>
@@ -251,6 +298,7 @@ export function LessonLibrary() {
                 <th className="px-4 py-3">Level</th>
                 <th className="px-4 py-3">Topic</th>
                 <th className="px-4 py-3">Quiz</th>
+                <th className="px-4 py-3">Video</th>
                 <th className="px-4 py-3">Active</th>
                 <th className="px-4 py-3">Actions</th>
               </tr>
@@ -258,8 +306,8 @@ export function LessonLibrary() {
             <tbody className="divide-y divide-slate-800 text-slate-300">
               {items.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-slate-500">
-                    No lessons yet. Run seed script or add one.
+                  <td colSpan={9} className="px-4 py-8 text-center text-slate-500">
+                    No lessons match these filters.
                   </td>
                 </tr>
               ) : (
@@ -271,6 +319,9 @@ export function LessonLibrary() {
                     <td className="px-4 py-3">{lesson.level}</td>
                     <td className="px-4 py-3 capitalize">{lesson.topic}</td>
                     <td className="px-4 py-3">{lesson.quiz?.length ?? 0}</td>
+                    <td className={`px-4 py-3 text-xs font-medium ${videoStatusClass(lesson)}`}>
+                      {videoStatusLabel(lesson)}
+                    </td>
                     <td className="px-4 py-3">{lesson.isActive ? 'Yes' : 'No'}</td>
                     <td className="px-4 py-3">
                       <div className="flex gap-2">
@@ -360,10 +411,10 @@ export function LessonLibrary() {
               <label className="col-span-2 block text-sm">
                 <span className="text-slate-400">Description</span>
                 <textarea
-                  rows={2}
+                  rows={8}
                   value={form.description}
                   onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                  className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-white"
+                  className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 font-mono text-xs leading-relaxed text-white"
                 />
               </label>
               <label className="block text-sm">
@@ -373,9 +424,9 @@ export function LessonLibrary() {
                   onChange={e => setForm(f => ({ ...f, level: e.target.value }))}
                   className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-white"
                 >
-                  {LEVELS.map(l => (
+                  {LESSON_LEVELS.map(l => (
                     <option key={l} value={l}>
-                      {l}
+                      {l} — {LEVEL_LABELS[l]}
                     </option>
                   ))}
                 </select>
@@ -387,7 +438,7 @@ export function LessonLibrary() {
                   onChange={e => setForm(f => ({ ...f, topic: e.target.value }))}
                   className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-white"
                 >
-                  {TOPICS.map(t => (
+                  {LESSON_TOPICS.map(t => (
                     <option key={t} value={t}>
                       {t}
                     </option>
@@ -412,7 +463,7 @@ export function LessonLibrary() {
                 Active (visible in app when lessons ship)
               </label>
               <label className="col-span-2 block text-sm">
-                <span className="text-slate-400">External video URL (MVP seed or CDN link)</span>
+                <span className="text-slate-400">External video URL (optional CDN link)</span>
                 <input
                   value={form.externalVideoUrl}
                   onChange={e => setForm(f => ({ ...f, externalVideoUrl: e.target.value }))}
