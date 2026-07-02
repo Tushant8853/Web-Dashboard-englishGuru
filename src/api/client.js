@@ -285,3 +285,93 @@ export async function reorderPlacementQuestions(orderedIds) {
   }
   return json.data;
 }
+
+export async function fetchLearningGoals() {
+  const res = await api.get('/api/web-admin/learning-goals');
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to load learning goals');
+  }
+  return json.data;
+}
+
+export async function createLearningGoal(payload) {
+  const res = await api.post('/api/web-admin/learning-goals', payload);
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to create learning goal');
+  }
+  return json.data.goal;
+}
+
+export async function updateLearningGoal(goalId, payload) {
+  const res = await api.put(`/api/web-admin/learning-goals/${goalId}`, payload);
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to update learning goal');
+  }
+  return json.data.goal;
+}
+
+export async function deleteLearningGoal(goalId) {
+  const res = await api.delete(`/api/web-admin/learning-goals/${goalId}`);
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to delete learning goal');
+  }
+  return true;
+}
+
+export async function reorderLearningGoals(orderedIds) {
+  const res = await api.put('/api/web-admin/learning-goals/reorder', { orderedIds });
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to reorder learning goals');
+  }
+  return json.data;
+}
+
+export async function fetchGoalIntakeQuestions(goalKey) {
+  const res = await api.get('/api/web-admin/goal-intake-questions', { params: { goalKey } });
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to load goal intake questions');
+  }
+  return json.data;
+}
+
+export async function createGoalIntakeQuestion(payload) {
+  const res = await api.post('/api/web-admin/goal-intake-questions', payload);
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to create goal intake question');
+  }
+  return json.data.question;
+}
+
+export async function updateGoalIntakeQuestion(questionId, payload) {
+  const res = await api.put(`/api/web-admin/goal-intake-questions/${questionId}`, payload);
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to update goal intake question');
+  }
+  return json.data.question;
+}
+
+export async function deleteGoalIntakeQuestion(questionId) {
+  const res = await api.delete(`/api/web-admin/goal-intake-questions/${questionId}`);
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to delete goal intake question');
+  }
+  return true;
+}
+
+export async function reorderGoalIntakeQuestions(goalKey, orderedIds) {
+  const res = await api.put('/api/web-admin/goal-intake-questions/reorder', { goalKey, orderedIds });
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || 'Failed to reorder goal intake questions');
+  }
+  return json.data;
+}
